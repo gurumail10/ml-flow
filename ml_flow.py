@@ -2,13 +2,15 @@ import pandas as pd
 import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import accuracy_score,confusion_matrix,classification_report
+from sklearn.metrics import accuracy_score,f1_score
 from sys import argv
 
 import mlflow
 import mlflow.sklearn
 
 import os
+import scikitplot as skplt
+
 
 #df = pd.read_csv(os.path.join(os.path.dirname(__file__), "../wine_data.csv"))
 #print(df.shape)
@@ -39,7 +41,12 @@ with mlflow.start_run():
     rf.fit(data_train,class_train)
     pred=rf.predict(data_test)
     accuracy=accuracy_score(class_test,pred)
+    f1=f1_score(class_test,pred)
+
     
+    skplt.metrics.plot_roc_curve(class_test, pred)
+    plot=plt.show()
+
     print("max_depth", max_depth)
     print("num_tree", num_tree)
     print("accuracy", accuracy)
@@ -48,6 +55,8 @@ with mlflow.start_run():
     
     mlflow.log_param("max_depth", max_depth)
     mlflow.log_param("num_tree", num_tree)
+
     mlflow.log_metric("accuracy", accuracy)
+    mlflow.log_metric("f1-score", f1)
     mlflow.sklearn.log_model(rf, "model")
-   
+    mlflow.log_artifact('ROC Curve',plot)
