@@ -1,0 +1,10 @@
+name: ml_flow
+
+conda_env: conda.yaml
+
+entry_points:
+  main:
+    parameters:
+      num_tree: {type: int, default: 10}
+      max_depth: {type: int, default: 3}
+    command: "python ml_flow.py {num_tree} {max_depth}"
